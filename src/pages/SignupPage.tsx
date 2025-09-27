@@ -216,7 +216,7 @@ export default function SignupPage() {
 
           {/* Signup Form */}
           <form onSubmit={handleSubmit} className="grid gap-3 sm:gap-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start content-start">
                   <div className="grid gap-1">
                     <Label htmlFor="firstName">First name</Label>
                     <div className="relative">
