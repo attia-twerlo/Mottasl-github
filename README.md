@@ -10,6 +10,8 @@ A modern messaging and campaign management platform built with React, Vite, and 
 - 🎯 [React Router](https://reactrouter.com/) - Declarative routing for React
 - 🎨 [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework
 - 🗃️ [Prisma](https://www.prisma.io/) - Next-generation ORM for Node.js and TypeScript
+- 🎭 [shadcn/ui](https://ui.shadcn.com/) - Re-usable components built with Radix UI and Tailwind CSS
+- 🤖 [Model Context Protocol (MCP)](https://microsoft.github.io/model-context-protocol/) - Standard protocol for AI model interaction
 
 ## Getting Started
 
@@ -63,6 +65,39 @@ yarn build
 ```
 
 The build output will be in the `dist` directory.
+
+## UI Components with shadcn/ui
+
+This project uses shadcn/ui for its component library, which provides:
+
+- 🎨 Beautiful, modern components built with Radix UI and Tailwind CSS
+- ♿ Accessible and customizable components
+- 🛠️ Easy installation and usage with CLI
+- 📦 Copy and paste components into your project
+
+To add new shadcn/ui components:
+
+```bash
+npx shadcn-ui@latest add [component-name]
+```
+
+## Model Context Protocol (MCP)
+
+The project implements the Model Context Protocol (MCP) for AI integrations:
+
+- 🤖 Standardized communication with AI models
+- 📝 Context-aware interactions
+- 🔄 Bi-directional streaming support
+- 🎯 Improved accuracy with structured context
+- 🛠️ Built-in tools and capabilities
+
+MCP components can be found in the project structure and are used for:
+- Intelligent campaign suggestions
+- Context-aware message generation
+- Smart contact categorization
+- Analytics insights
+
+For more information about MCP implementation, check the `DEVELOPMENT_GUIDELINES.md`.
 
 ## Contributing
 
