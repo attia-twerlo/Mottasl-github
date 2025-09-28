@@ -271,12 +271,12 @@ export function PageHeader({
     if (isLoading) {
       return (
         <motion.header 
-          className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) relative max-w-full overflow-x-hidden"
+          className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) relative max-w-full overflow-x-hidden rounded-t-xl overflow-hidden"
           variants={skeletonStaggerVariants}
           initial="initial"
           animate="animate"
         >
-          <div className="flex w-full items-center px-2 sm:px-4 md:px-4 lg:px-6 min-w-0">
+          <div className="flex w-full items-center px-8 py-4 lg:px-10 lg:py-6 min-w-0">
             {/* Left side - Sidebar trigger and breadcrumbs skeleton */}
             <motion.div 
               className="flex items-center gap-2 sm:gap-3 flex-shrink-0"
@@ -324,8 +324,8 @@ export function PageHeader({
 
     return (
       <>
-        <header className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) relative max-w-full overflow-x-hidden">
-          <div className="flex w-full items-center px-2 sm:px-4 md:px-4 lg:px-6 min-w-0">
+        <header className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) relative max-w-full overflow-x-hidden rounded-t-xl overflow-hidden">
+          <div className="flex w-full items-center px-4 py-4 min-w-0">
             {/* Left side - Sidebar trigger and breadcrumbs */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <Tooltip>
