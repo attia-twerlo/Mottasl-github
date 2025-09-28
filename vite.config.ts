@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import history from 'connect-history-api-fallback'
+import { copyFileSync } from 'fs'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -27,6 +28,18 @@ export default defineConfig({
           })
         )
       }
+    },
+    {
+      name: 'copy-spa-config',
+      writeBundle() {
+        // Copy SPA routing configs to dist folder for deployment
+        try {
+          copyFileSync('public/_redirects', 'dist/_redirects')
+          copyFileSync('public/vercel.json', 'dist/vercel.json')
+        } catch (error) {
+          console.log('Note: Some deployment configs not copied (this is normal for development)')
+        }
+      }
     }
   ],
   resolve: {
@@ -39,6 +52,16 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    // Ensure assets are properly referenced
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        // Better chunking for SPA
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
   },
   preview: {
     port: 3000,
