@@ -27,6 +27,7 @@ import { mockContacts } from "@/data/mock-data"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { ActionCenter } from "@/components/action-center"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface BreadcrumbItem {
   label: string
@@ -121,6 +122,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   const location = useLocation()
   const pathname = location.pathname
+  const isMobile = useIsMobile()
   
   // Component-level skeleton state for breadcrumbs
   const [showBreadcrumbSkeleton, setShowBreadcrumbSkeleton] = React.useState(true)
@@ -269,12 +271,12 @@ export function PageHeader({
     if (isLoading) {
       return (
         <motion.header 
-          className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) relative"
+          className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) relative max-w-full overflow-x-hidden"
           variants={skeletonStaggerVariants}
           initial="initial"
           animate="animate"
         >
-          <div className="flex w-full items-center px-3 sm:px-4 lg:px-6">
+          <div className="flex w-full items-center px-2 sm:px-3 md:px-4 lg:px-6 min-w-0">
             {/* Left side - Sidebar trigger and breadcrumbs skeleton */}
             <motion.div 
               className="flex items-center gap-2 sm:gap-3 flex-shrink-0"
@@ -290,22 +292,29 @@ export function PageHeader({
               </div>
             </motion.div>
 
-            {/* Center - Search Bar skeleton (Absolute positioning for perfect centering) */}
-            <motion.div 
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm sm:max-w-md lg:max-w-lg px-4 sm:px-6 lg:px-8 pointer-events-none"
-              variants={skeletonItemVariants}
-            >
-              <div className="relative w-full pointer-events-auto">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Skeleton className="h-8 w-full rounded-md" />
-              </div>
-            </motion.div>
+            {/* Center - Search Bar skeleton (Hidden on mobile, absolute positioning for perfect centering on desktop) */}
+            {!isMobile && (
+              <motion.div 
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-2 sm:px-4 md:px-6 lg:px-8 pointer-events-none"
+                variants={skeletonItemVariants}
+              >
+                <div className="relative w-full pointer-events-auto">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Skeleton className="h-8 w-full rounded-md" />
+                </div>
+              </motion.div>
+            )}
             
-            {/* Right side - Notification Bell skeleton */}
+            {/* Right side - Mobile Search Icon & Notification Bell skeleton */}
             <motion.div 
-              className="flex-shrink-0 ml-auto"
+              className="flex items-center gap-2 flex-shrink-0 ml-auto"
               variants={skeletonItemVariants}
             >
+              {/* Mobile Search Icon Skeleton */}
+              {isMobile && showSearch && (
+                <Skeleton className="h-8 w-8 rounded-md" />
+              )}
+              {/* Notification Bell Skeleton */}
               <Skeleton className="h-8 w-8 rounded-full" />
             </motion.div>
           </div>
@@ -315,8 +324,8 @@ export function PageHeader({
 
     return (
       <>
-        <header className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) relative">
-          <div className="flex w-full items-center px-3 sm:px-4 lg:px-6">
+        <header className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) relative max-w-full overflow-x-hidden">
+          <div className="flex w-full items-center px-2 sm:px-3 md:px-4 lg:px-6 min-w-0">
             {/* Left side - Sidebar trigger and breadcrumbs */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <Tooltip>
@@ -362,30 +371,51 @@ export function PageHeader({
               )}
             </div>
 
-            {/* Center - Search Bar (Absolute positioning for perfect centering) */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm sm:max-w-md lg:max-w-lg px-4 sm:px-6 lg:px-8 pointer-events-none">
-              {showSearch ? (
-                <div className="relative w-full pointer-events-auto">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder={searchPlaceholder}
-                    value={searchValue}
-                    onChange={(e) => onSearchChange?.(e.target.value)}
-                    onFocus={onSearchFocus}
-                    className="pl-9 pr-3 h-8 text-sm bg-muted/50 border-muted-foreground/20 focus-visible:bg-background focus-visible:border-ring transition-all duration-200 w-full cursor-pointer"
-                  />
-                </div>
-              ) : (
-                <div className="relative w-full pointer-events-auto">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Skeleton className="h-8 w-full rounded-md" />
-                </div>
-              )}
-            </div>
+            {/* Center - Search Bar (Hidden on mobile, absolute positioning for perfect centering on desktop) */}
+            {!isMobile && (
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-2 sm:px-4 md:px-6 lg:px-8 pointer-events-none">
+                {showSearch ? (
+                  <div className="relative w-full pointer-events-auto">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder={searchPlaceholder}
+                      value={searchValue}
+                      onChange={(e) => onSearchChange?.(e.target.value)}
+                      onFocus={onSearchFocus}
+                      className="pl-9 pr-3 h-8 text-sm bg-muted/50 border-muted-foreground/20 focus-visible:bg-background focus-visible:border-ring transition-all duration-200 w-full cursor-pointer"
+                    />
+                  </div>
+                ) : (
+                  <div className="relative w-full pointer-events-auto">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Skeleton className="h-8 w-full rounded-md" />
+                  </div>
+                )}
+              </div>
+            )}
             
-            {/* Right side - Notification Bell */}
-            <div className="flex-shrink-0 ml-auto">
+            {/* Right side - Mobile Search Icon & Notification Bell */}
+            <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
+              {/* Mobile Search Icon */}
+              {isMobile && showSearch && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={onSearchFocus}
+                    >
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" align="center">
+                    <p>Search</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              {/* Notification Bell */}
               <NotificationBell isLoading={isLoading} />
             </div>
           </div>
@@ -406,7 +436,7 @@ export function PageHeader({
   
   // Main content header
   return (
-    <div className={`flex flex-col gap-4 px-4 py-4 md:flex-row md:items-end md:justify-between md:px-6 md:py-6 ${className}`}>
+    <div className={`flex flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 md:flex-row md:items-end md:justify-between md:px-6 md:py-6 max-w-full ${className}`}>
       {/* Left side - Title and Description */}
       <div className="space-y-1">
         {title && <h1 className="text-xl font-semibold">{title}</h1>}
@@ -417,16 +447,16 @@ export function PageHeader({
       
       {/* Right side - Search, Filters, and Actions */}
       {(showSearch || showFilters || customActions || primaryAction || secondaryAction || tertiaryAction) && (
-        <div className={`flex items-center gap-2 ${stackOnMobile ? 'flex-col items-start md:flex-row md:items-center' : 'flex-row'}`}>
+        <div className={`flex items-center gap-2 min-w-0 ${stackOnMobile ? 'flex-col items-start w-full md:flex-row md:items-center md:w-auto' : 'flex-row'}`}>
           {/* Search Bar */}
           {showSearch && (
-            <div className="relative">
+            <div className="relative w-full md:w-48 max-w-sm">
               <input
                 type="text"
                 placeholder={searchPlaceholder}
                 value={searchValue}
                 onChange={(e) => onSearchChange?.(e.target.value)}
-                className="h-9 w-48 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
           )}

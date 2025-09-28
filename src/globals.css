@@ -353,7 +353,49 @@
   overflow: hidden;
 }
 
+/* Fixed width responsive design utilities */
 html, body {
   max-width: 100vw;
   overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Mobile-first fixed width container */
+@media (max-width: 767px) {
+  .mobile-fixed-container {
+    max-width: 100%;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Ensure text doesn't overflow on mobile */
+  .mobile-text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Flexible container for mobile */
+  .mobile-flex-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Tablet responsive design */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tablet-container {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+  .desktop-container {
+    max-width: none;
+  }
 }

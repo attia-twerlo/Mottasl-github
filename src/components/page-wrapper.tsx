@@ -16,17 +16,17 @@ export function PageWrapper({ children, isLoading: propIsLoading = false }: Page
 
   return (
     <motion.div 
-      className="sidebar-content-transition h-full flex flex-col"
+      className="sidebar-content-transition h-full flex flex-col max-w-full overflow-x-hidden"
       variants={pageWrapperLoadingVariants}
       initial="initial"
       animate={isLoading ? "loading" : "loaded"}
     >
-      <div className="sidebar-content-transition flex-1 flex flex-col min-h-0">
+      <div className="sidebar-content-transition flex-1 flex flex-col min-h-0 min-w-0">
         <AnimatePresence mode="wait">
           {isLoading ? (
             <motion.div 
               key="loading"
-              className="space-y-4 p-6"
+              className="space-y-4 p-3 sm:p-4 md:p-6 max-w-full"
               variants={skeletonStaggerVariants}
               initial="initial"
               animate="animate"
@@ -58,7 +58,7 @@ export function PageWrapper({ children, isLoading: propIsLoading = false }: Page
           ) : (
             <motion.div
               key="content"
-              className="flex-1 flex flex-col"
+              className="flex-1 flex flex-col max-w-full min-w-0"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}

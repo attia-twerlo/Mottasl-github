@@ -40,9 +40,9 @@ function DashboardContent({ children }: { children: ReactNode }) {
         } as React.CSSProperties
       }
     >
-      <div className="flex h-screen w-full">
+      <div className="flex h-screen w-full max-w-full">
         <AppSidebar variant="inset" />
-        <SidebarInset className="flex flex-1 flex-col sidebar-content-transition bg-white overflow-hidden relative">
+        <SidebarInset className="flex flex-1 flex-col sidebar-content-transition bg-white relative min-w-0">
           <PageHeader 
             showBreadcrumbs={true} 
             showSearch={true}
@@ -54,7 +54,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
             onActionCenterClose={handleActionCenterClose}
             isLoading={isNavigating} 
           />
-          <div className="flex-1 overflow-auto relative">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden relative min-w-0">
             <PageWrapper>
               {children}
             </PageWrapper>
