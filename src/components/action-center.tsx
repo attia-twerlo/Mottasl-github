@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
  
@@ -11,7 +10,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { mockContacts } from '@/data/mock-data'
 import { cn } from '@/lib/utils'
-import { useIsMobile } from '@/hooks/use-mobile'
 
 interface SearchItem {
   id: string
@@ -41,7 +39,6 @@ export function ActionCenter({ isOpen, onClose, searchValue, onSearchChange }: A
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
-  const isMobile = useIsMobile()
   // Local query state so typing here doesn't affect the header search bar
   const [query, setQuery] = useState("")
   const navigate = useNavigate()
@@ -56,122 +53,263 @@ export function ActionCenter({ isOpen, onClose, searchValue, onSearchChange }: A
     {
       id: 'create-contact',
       title: 'Create new contact',
-      description: 'Add a new contact to your list',
-      icon: <Plus className="h-4 w-4" />,
-      shortcut: '⌘N',
+      description: 'Add a new contact to your database',
+      icon: <Users className="h-4 w-4" />,
+      shortcut: '⌘ A',
       category: 'action',
-      action: () => navigate('/contacts/create')
+      action: () => {
+        navigate('/contacts/create')
+        onClose()
+      }
     },
     {
       id: 'create-campaign',
       title: 'Create new campaign',
-      description: 'Start a new marketing campaign',
+      description: 'Start a new messaging campaign',
       icon: <MessageSquare className="h-4 w-4" />,
-      shortcut: '⌘K',
+      shortcut: '⌘ B',
       category: 'action',
-      action: () => navigate('/campaigns/create')
+      action: () => {
+        navigate('/campaigns/create')
+        onClose()
+      }
     },
     {
       id: 'view-analytics',
       title: 'View analytics',
-      description: 'Check your performance metrics',
+      description: 'Open analytics dashboard',
       icon: <BarChart3 className="h-4 w-4" />,
-      shortcut: '⌘A',
+      shortcut: '⌘ C',
       category: 'navigation',
-      action: () => navigate('/analytics')
+      action: () => {
+        navigate('/analytics')
+        onClose()
+      }
     },
     {
       id: 'settings',
       title: 'Settings',
-      description: 'Configure your preferences',
+      description: 'Configure application settings',
       icon: <Settings className="h-4 w-4" />,
-      shortcut: '⌘,',
+      shortcut: '⌘ D',
       category: 'navigation',
-      action: () => navigate('/settings')
+      action: () => {
+        navigate('/settings')
+        onClose()
+      }
+    },
+    {
+      id: 'templates',
+      title: 'Message templates',
+      description: 'Manage message templates',
+      icon: <FileText className="h-4 w-4" />,
+      shortcut: '⌘ E',
+      category: 'action',
+      action: () => {
+        navigate('/campaigns/templates')
+        onClose()
+      }
+    },
+    {
+      id: 'campaigns',
+      title: 'All campaigns',
+      description: 'View and manage campaigns',
+      icon: <MessageSquare className="h-4 w-4" />,
+      shortcut: '⌘ F',
+      category: 'navigation',
+      action: () => {
+        navigate('/campaigns')
+        onClose()
+      }
     }
   ]
 
   const allActions = [...quickActions]
 
-  // Filter contacts based on query
-  const filteredContacts = mockContacts.filter(contact =>
-    contact.name.toLowerCase().includes(query.toLowerCase()) ||
-    contact.phone.includes(query)
-  )
+  const filteredActions = query.trim()
+    ? allActions.filter(action => {
+        const searchTerm = query.toLowerCase()
+        return action.title.toLowerCase().includes(searchTerm) ||
+               (action.description?.toLowerCase() || '').includes(searchTerm) ||
+               action.category.toLowerCase().includes(searchTerm)
+      })
+    : allActions
 
-  // Filter actions based on query
-  const filteredActions = allActions.filter(action =>
-    action.title.toLowerCase().includes(query.toLowerCase()) ||
-    action.description?.toLowerCase().includes(query.toLowerCase())
-  )
+  const filteredSearches = query.trim()
+    ? latestSearches.filter(search => {
+        const searchTerm = query.toLowerCase()
+        return search.title.toLowerCase().includes(searchTerm) ||
+               search.description.toLowerCase().includes(searchTerm) ||
+               search.type.toLowerCase().includes(searchTerm)
+      })
+    : latestSearches
 
-  // Reset selection when query changes
-  useEffect(() => {
-    setSelectedIndex(-1)
-  }, [query])
+  const displayedSearches = filteredSearches.slice(0, 3)
 
-  // Focus input when dialog opens
+  // Contacts search (top 5)
+  const filteredContacts = query.trim()
+    ? mockContacts
+        .filter(contact => {
+          const searchTerm = query.toLowerCase()
+          return contact.name.toLowerCase().includes(searchTerm) ||
+                 contact.phone.toLowerCase().includes(searchTerm)
+        })
+        .slice(0, 5)
+    : []
+
+  // Hide contacts before searching
+  const displayedContacts = query.trim() ? filteredContacts : []
+
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus()
     }
   }, [isOpen])
 
-  // Keyboard navigation
+  useEffect(() => {
+    setSelectedIndex(-1)
+  }, [query])
+
+  // Reset local query when dialog opens
+  useEffect(() => {
+    if (isOpen) setQuery("")
+  }, [isOpen])
+
+  
+
+  const scrollSelectedIntoView = (index: number) => {
+    if (!contentRef.current || index < 0) return
+    
+    // Calculate total available items
+    const searchCount = Math.min(3, filteredSearches.length)
+    const totalItems = searchCount + filteredActions.length
+    if (index >= totalItems) return
+
+    // Find the selected item element
+    const selectedElement = contentRef.current.querySelector(`[data-item-index="${index}"]`) as HTMLElement
+    if (!selectedElement) return
+
+    const container = contentRef.current
+    const containerRect = container.getBoundingClientRect()
+    const elementRect = selectedElement.getBoundingClientRect()
+
+    // Check if element is above viewport
+    if (elementRect.top < containerRect.top) {
+      selectedElement.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    }
+    // Check if element is below viewport
+    else if (elementRect.bottom > containerRect.bottom) {
+      selectedElement.scrollIntoView({ block: 'end', behavior: 'smooth' })
+    }
+  }
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+    const searchesCount = Math.min(3, filteredSearches.length)
+    const actionsCount = filteredActions.length
+    const totalItems = searchesCount + actionsCount
+    
+    const getNextValidIndex = (currentIndex: number, isUp: boolean): number => {
+      if (totalItems === 0) return -1;
+      
+      // If no index selected yet
+      if (currentIndex < 0) {
+        return isUp ? totalItems - 1 : 0;
+      }
+      
+      // Simple circular navigation
+      return isUp 
+        ? (currentIndex - 1 + totalItems) % totalItems 
+        : (currentIndex + 1) % totalItems;
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setSelectedIndex(prev => {
+          const newIndex = getNextValidIndex(prev, false)
+          setTimeout(() => scrollSelectedIntoView(newIndex), 0)
+          return newIndex
+        })
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setSelectedIndex(prev => {
+          const newIndex = getNextValidIndex(prev, true)
+          setTimeout(() => scrollSelectedIntoView(newIndex), 0)
+          return newIndex
+        })
+        break
+      case 'Enter':
+        e.preventDefault()
+        if (selectedIndex >= 0) {
+          // Get all items in order
+          const allItems = [...displayedContacts, ...filteredSearches, ...filteredActions]
+          const selectedItem = allItems[selectedIndex]
+
+          if (!selectedItem) return
+
+          // Handle contacts
+          if ('phone' in selectedItem) {
+            navigate(`/contacts/${selectedItem.id}`)
+            onClose()
+            return
+          }
+
+          // Handle latest searches
+          if ('type' in selectedItem) {
+            if (selectedItem.type === 'contact' && selectedItem.id === '1') {
+              navigate('/contacts/6') // Omar Sattam
+              onClose()
+            } else if (selectedItem.type === 'page') {
+              navigate(`/${selectedItem.title.toLowerCase()}`)
+              onClose()
+            }
+            return
+          }
+
+          // Handle quick actions
+          if (selectedItem.action) {
+            selectedItem.action()
+          }
+        }
+        break
+      case 'Escape':
+        onClose()
+        break
+    }
+  }
+
+  const handleItemClick = (item: any, index: number) => {
+    setSelectedIndex(index)
+    
+    // Handle contacts
+    if ('phone' in item) {
+      navigate(`/contacts/${item.id}`)
       onClose()
       return
     }
 
-    const totalItems = query.length === 0 
-      ? latestSearches.length + quickActions.length
-      : filteredContacts.length + filteredActions.length
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setSelectedIndex(prev => (prev + 1) % totalItems)
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setSelectedIndex(prev => prev <= 0 ? totalItems - 1 : prev - 1)
-    } else if (e.key === 'Enter' && selectedIndex >= 0) {
-      e.preventDefault()
-      // Handle enter key press based on current selection
-      if (query.length === 0) {
-        if (selectedIndex < latestSearches.length) {
-          const item = latestSearches[selectedIndex]
-          if (item.type === 'contact') {
-            navigate(`/contacts/${item.id}`)
-          } else {
-            navigate(`/${item.title.toLowerCase()}`)
-          }
-          onClose()
-        } else {
-          const actionIndex = selectedIndex - latestSearches.length
-          if (actionIndex < quickActions.length) {
-            quickActions[actionIndex].action()
-            onClose()
-          }
-        }
-      } else {
-        if (selectedIndex < filteredContacts.length) {
-          navigate(`/contacts/${filteredContacts[selectedIndex].id}`)
-          onClose()
-        } else {
-          const actionIndex = selectedIndex - filteredContacts.length
-          if (actionIndex < filteredActions.length) {
-            filteredActions[actionIndex].action()
-            onClose()
-          }
-        }
+    // Handle latest searches
+    if ('type' in item) {
+      if (item.type === 'contact' && item.id === '1') {
+        navigate('/contacts/6') // Omar Sattam
+        onClose()
+      } else if (item.type === 'page') {
+        navigate(`/${item.title.toLowerCase()}`)
+        onClose()
       }
+      return
+    }
+
+    // Handle quick actions
+    if (item.action) {
+      item.action()
     }
   }
 
-  // Content component to be used in both Sheet and Dialog
-  const ActionCenterContent = () => {
-    return (
-      <>
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-xl p-0 gap-0 overflow-hidden h-[600px] flex flex-col bg-background border" showCloseButton={false}>
         {/* 1. Searchbar with p-4 and bottom border */}
         <div className="p-4 border-b border-border/50 flex-shrink-0">
           <div className="relative">
@@ -183,247 +321,198 @@ export function ActionCenter({ isOpen, onClose, searchValue, onSearchChange }: A
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="pl-9 pr-3 h-10 text-sm bg-background border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="pl-9 pr-20 h-10 text-sm border-0 bg-transparent focus-visible:bg-transparent focus-visible:ring-0 shadow-none"
             />
-          </div>
-        </div>
-
-        {/* 2. Results Area with flex-1 to take up remaining space */}
-        <div className="flex-1 overflow-hidden flex flex-col">
-          <div 
-            ref={contentRef}
-            className="flex-1 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border/30 hover:scrollbar-thumb-border/50"
-          >
-            {/* Show latest searches when no query */}
-            {query.length === 0 && (
-              <div className="p-4">
-                <div className="mb-3">
-                  <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                    <Search className="h-3 w-3" />
-                    Latest searches
-                  </h3>
-                  <div className="space-y-1">
-                    {latestSearches.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors",
-                          selectedIndex === index ? "bg-accent text-accent-foreground" : "hover:bg-accent/50"
-                        )}
-                        onClick={() => {
-                          if (item.type === 'contact') {
-                            navigate(`/contacts/${item.id}`)
-                            onClose()
-                          } else {
-                            navigate(`/${item.title.toLowerCase()}`)
-                            onClose()
-                          }
-                        }}
-                      >
-                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                          {item.title.charAt(0)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">{item.title}</div>
-                          <div className="text-xs text-muted-foreground truncate">{item.description}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mb-3">
-                  <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                    <Zap className="h-3 w-3" />
-                    Quick actions
-                  </h3>
-                  <div className="space-y-1">
-                    {quickActions.map((action, index) => (
-                      <div
-                        key={action.id}
-                        className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors",
-                          selectedIndex === latestSearches.length + index ? "bg-accent text-accent-foreground" : "hover:bg-accent/50"
-                        )}
-                        onClick={() => {
-                          action.action()
-                          onClose()
-                        }}
-                      >
-                        <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
-                          {action.icon}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">{action.title}</div>
-                          {action.description && (
-                            <div className="text-xs text-muted-foreground truncate">{action.description}</div>
-                          )}
-                        </div>
-                        {action.shortcut && !isMobile && (
-                          <div className="text-xs text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">
-                            {action.shortcut}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Show search results when there's a query */}
-            {query.length > 0 && (
-              <div className="p-4">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={query}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="space-y-4"
-                  >
-                    {/* Contacts Results */}
-                    {filteredContacts.length > 0 && (
-                      <div>
-                        <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                          <Users className="h-3 w-3" />
-                          Contacts ({filteredContacts.length})
-                        </h3>
-                        <div className="space-y-1">
-                          {filteredContacts.slice(0, 3).map((contact, index) => (
-                            <div
-                              key={contact.id}
-                              className={cn(
-                                "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors",
-                                selectedIndex === index ? "bg-accent text-accent-foreground" : "hover:bg-accent/50"
-                              )}
-                              onClick={() => {
-                                navigate(`/contacts/${contact.id}`)
-                                onClose()
-                              }}
-                            >
-                              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-medium">
-                                {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium truncate">{contact.name}</div>
-                                <div className="text-xs text-muted-foreground truncate">{contact.phone}</div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Actions Results */}
-                    {filteredActions.length > 0 && (
-                      <div>
-                        <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                          <Command className="h-3 w-3" />
-                          Actions ({filteredActions.length})
-                        </h3>
-                        <div className="space-y-1">
-                          {filteredActions.slice(0, 5).map((action, index) => (
-                            <div
-                              key={action.id}
-                              className={cn(
-                                "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors",
-                                selectedIndex === filteredContacts.length + index ? "bg-accent text-accent-foreground" : "hover:bg-accent/50"
-                              )}
-                              onClick={() => {
-                                action.action()
-                                onClose()
-                              }}
-                            >
-                              <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
-                                {action.icon}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium truncate">{action.title}</div>
-                                {action.description && (
-                                  <div className="text-xs text-muted-foreground truncate">{action.description}</div>
-                                )}
-                              </div>
-                              {action.shortcut && !isMobile && (
-                                <div className="text-xs text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">
-                                  {action.shortcut}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* No results */}
-                    {filteredContacts.length === 0 && filteredActions.length === 0 && (
-                      <div className="text-center py-12">
-                        <Search className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                        <p className="text-sm text-muted-foreground mb-1">No results found</p>
-                        <p className="text-xs text-muted-foreground">Try a different search term</p>
-                      </div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 3. Footer with shortcuts - only show on desktop */}
-        {!isMobile && (
-          <div className="flex items-center justify-between p-3 border-t border-border/30 bg-muted/30 text-xs text-muted-foreground flex-shrink-0">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <ArrowUp className="h-3 w-3" />
-                <ArrowDown className="h-3 w-3" />
-                <span>Move up/down</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span>/</span>
-                <span>Command guide</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span>Close</span>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               <Button
                 variant="secondary"
                 size="sm"
+                onClick={() => {
+                  const allItems = [...filteredSearches, ...filteredActions]
+                  if (allItems[selectedIndex]) {
+                    if (selectedIndex < filteredSearches.length) {
+                      // Handle search item
+                      onSearchChange(allItems[selectedIndex].title)
+                    } else {
+                      // Handle action item
+                      const actionItem = allItems[selectedIndex] as ActionItem
+                      actionItem.action()
+                    }
+                  }
+                }}
                 className="h-6 px-2 text-xs font-medium hover:bg-secondary/80"
-                onClick={onClose}
               >
-                ESC
+                ENTER
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="h-6 w-6 p-0 hover:bg-muted/50"
+              >
+                <X className="h-3 w-3" />
               </Button>
             </div>
           </div>
-        )}
-      </>
-    )
-  }
+        </div>
 
-  // Render Sheet on mobile, Dialog on desktop
-  if (isMobile) {
-    return (
-      <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent 
-          side="bottom" 
-          className="h-[80vh] p-0 gap-0 flex flex-col"
-        >
-          <ActionCenterContent />
-        </SheetContent>
-      </Sheet>
-    )
-  }
+        {/* 2. Content with p-4 and overflow-auto */}
+        <div ref={contentRef} className="p-4 flex-1 overflow-y-auto space-y-2">
+          <AnimatePresence>
+            {displayedContacts.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-6"
+              >
+                <h3 className="text-sm font-regular text-muted-foreground m-3">Contacts</h3>
+                <div className="space-y-1">
+                  {displayedContacts.map((contact, index) => (
+                    <motion.div
+                      key={contact.id}
+                      data-item-index={index}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.03 }}
+                      className={cn(
+                        "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors",
+                        selectedIndex === index ? "bg-muted" : "hover:bg-muted/100"
+                      )}
+                      onClick={() => handleItemClick(contact, index)}
+                    >
+                      <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center">
+                        <Users className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">{contact.name}</div>
+                        <div className="text-xs text-muted-foreground">{contact.phone}</div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
-        className="max-w-xl p-0 gap-0 overflow-hidden h-[600px] flex flex-col" 
-        showCloseButton={false}
-      >
-        <ActionCenterContent />
+            {filteredSearches.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-6"
+              >
+                <h3 className="text-sm font-regulat text-muted-foreground m-3">Latest searches</h3>
+                <div className="space-y-1">
+                  {filteredSearches.slice(0, 3).map((search, index) => (
+                    <motion.div
+                      key={search.id}
+                      data-item-index={displayedContacts.length + index}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.03 }}
+                      className={cn(
+                        "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors",
+                        selectedIndex === (displayedContacts.length + index) ? "bg-muted" : "hover:bg-muted/100"
+                      )}
+                      onClick={() => handleItemClick(search, displayedContacts.length + index)}
+                    >
+                      <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center border border-border/50">
+                        <Search className="h-3.5 w-3.5" />
+                      </div>
+              <div className="flex-1">
+                        <div className="text-sm font-medium">{search.title}</div>
+                        <div className="text-xs text-muted-foreground">{search.description}</div>
+                      </div>
+                      
+                    </motion.div>
+                  ))}
+                  
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Separator */}
+          {filteredSearches.length > 0 && filteredActions.length > 0 && (
+            <div className="mx-3 my-2 border-t border-border/50"></div>
+          )}
+
+          <AnimatePresence>
+            {filteredActions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <h3 className="text-sm font-regular text-muted-foreground m-3">Quick actions</h3>
+                <div className="space-y-1">
+                  {filteredActions.map((action, index) => {
+                    const globalIndex = displayedContacts.length + Math.min(3, filteredSearches.length) + index
+                    return (
+                      <motion.div
+                        key={action.id}
+                        data-item-index={globalIndex}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.03 }}
+                        className={cn(
+                          "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors",
+                          selectedIndex === (Math.min(3, filteredSearches.length) + index) ? "bg-muted" : "hover:bg-muted/100"
+                        )}
+                        onClick={() => handleItemClick(action, globalIndex)}
+                      >
+                        <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center border border-border/50">
+                          {action.icon}
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-sm font-medium">{action.title}</div>
+                          <div className="text-xs text-muted-foreground">{action.description}</div>
+                        </div>
+                        {/* Removed shortcut badge in list as requested */}
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {(displayedContacts.length === 0) && filteredSearches.length === 0 && filteredActions.length === 0 && (
+            <div className="text-center py-6 text-muted-foreground">
+              <Search className="h-6 w-6 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No results found for "{query}"</p>
+            </div>
+          )}
+        </div>
+
+        {/* 3. Footer with p-4 */}
+        <div className="p-4 border-t bg-muted/30 flex items-center justify-between text-xs text-muted-foreground flex-shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <ArrowUp className="h-3 w-3" />
+              <ArrowDown className="h-3 w-3" />
+              <span>Move up/down</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>/</span>
+              <span>Command guide</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <span>Close</span>
+            <Button
+            variant="secondary"
+            size="sm"
+            className="h-6 px-2 text-xs font-medium hover:bg-secondary/80"
+            onClick={onClose}
+            >
+            ESC
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   )
 }
+
+
