@@ -53,11 +53,11 @@ function DashboardContent({ children }: { children: ReactNode }) {
             onActionCenterClose={handleActionCenterClose}
             isLoading={isNavigating} 
           />
-          <div className="flex-1 overflow-y-auto overflow-x-hidden relative min-w-0 mobile-safe-area md:pb-0">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden relative min-w-0">
             <PageWrapper>
               {children}
             </PageWrapper>
-            {/* Mobile safe area gradient overlay */}
+            {/* Mobile-only safe area gradient overlay */}
             <div className="absolute bottom-0 left-0 right-0 pointer-events-none md:hidden">
               <div 
                 className="h-20 bg-gradient-to-t from-white to-transparent"
