@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { AppSidebar } from "@/components/app-sidebar"
 import { PageWrapper } from "@/components/page-wrapper"
 import { PageHeader } from "@/components/page-header"
@@ -19,7 +19,6 @@ function DashboardContent({ children }: { children: ReactNode }) {
 
   const handleGlobalSearch = (value: string) => {
     setSearchValue(value)
-    // Handle global search functionality here
   }
 
   const handleSearchFocus = () => {
@@ -40,37 +39,30 @@ function DashboardContent({ children }: { children: ReactNode }) {
         } as React.CSSProperties
       }
     >
-      <div className="flex h-screen w-full max-w-full">
+      <div className="flex h-screen w-full">
         <AppSidebar variant="inset" />
-        <SidebarInset className="flex flex-1 flex-col sidebar-content-transition bg-white relative min-w-0">
-          <div
-            className="flex-1 overflow-y-auto overscroll-contain overflow-hidden relative min-w-0 scroll-smooth"
-            id="dashboard-scroll"
-            data-scroll-container
-          >
-            {/* Sticky Header inside scroll context */}
-            <div
-              className="sticky top-0 z-40 w-full backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/90 border-b border-border/30 transition-shadow rounded-t-xl overflow-hidden"
-              data-header
-            >
-              <PageHeader
-                showBreadcrumbs={true}
-                showSearch={true}
-                searchPlaceholder="Find contacts, create campaigns, or discover actions"
-                searchValue={searchValue}
-                onSearchChange={handleGlobalSearch}
-                onSearchFocus={handleSearchFocus}
-                isActionCenterOpen={isActionCenterOpen}
-                onActionCenterClose={handleActionCenterClose}
-                isLoading={isNavigating}
-                className="py-4 sm:py-5"
-              />
-            </div>
-            {/* Page Content */}
+        <SidebarInset className="flex flex-1 flex-col bg-white">
+          {/* Sticky Header */}
+          <div className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-sm border-b border-border/40 rounded-t-xl overflow-hidden">
+            <PageHeader
+              showBreadcrumbs={true}
+              showSearch={true}
+              searchPlaceholder="Find contacts, create campaigns, or discover actions"
+              searchValue={searchValue}
+              onSearchChange={handleGlobalSearch}
+              onSearchFocus={handleSearchFocus}
+              isActionCenterOpen={isActionCenterOpen}
+              onActionCenterClose={handleActionCenterClose}
+              isLoading={isNavigating}
+              className="py-4 sm:py-5"
+            />
+          </div>
+          
+          {/* Scrollable Content Area */}
+          <div className="flex-1 overflow-y-auto">
             <PageWrapper>
               {children}
             </PageWrapper>
-            {/* Bottom space handled via PageWrapper padding (mobile only) */}
           </div>
         </SidebarInset>
       </div>
@@ -80,48 +72,6 @@ function DashboardContent({ children }: { children: ReactNode }) {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { isAuthenticated, isLoading } = useAuth()
-  // Optional runtime toggle (could be lifted to config): set to false to disable iOS guard
-  const ENABLE_IOS_GUARD = true
-
-  useEffect(() => {
-    if (!ENABLE_IOS_GUARD) return
-    const ua = navigator.userAgent || navigator.vendor
-    const isiOS = /iPad|iPhone|iPod/.test(ua) || ("platform" in navigator && /Mac/.test((navigator as any).platform) && 'ontouchend' in document)
-    if (!isiOS) return
-
-    const scroller = document.getElementById('dashboard-scroll') as HTMLDivElement | null
-    if (!scroller) return
-
-    let startY = 0
-    let startScrollTop = 0
-
-    const onTouchStart = (e: TouchEvent) => {
-      startY = e.touches[0].clientY
-      startScrollTop = scroller.scrollTop
-    }
-
-    const onTouchMove = (e: TouchEvent) => {
-      const currentY = e.touches[0].clientY
-      const diff = currentY - startY
-      const scrollingDown = diff < 0 // finger moving up
-      const scrollingUp = diff > 0
-      const atTop = scroller.scrollTop <= 0
-      const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1
-
-      // Prevent bounce when user tries to pull past top or push past bottom
-      if ((atTop && scrollingUp) || (atBottom && scrollingDown)) {
-        e.preventDefault()
-      }
-    }
-
-    scroller.addEventListener('touchstart', onTouchStart, { passive: true })
-    scroller.addEventListener('touchmove', onTouchMove, { passive: false })
-
-    return () => {
-      scroller.removeEventListener('touchstart', onTouchStart)
-      scroller.removeEventListener('touchmove', onTouchMove)
-    }
-  }, [])
 
   // Show nothing while checking authentication
   if (isLoading) {
