@@ -103,7 +103,7 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
   const userData = {
     name: user?.name || "User",
     email: user?.email || "user@example.com",
-    avatar: "/avatars/user.jpg",
+    avatar: "", // Use empty string to trigger Avatar fallback with initials
   }
 
   return (
