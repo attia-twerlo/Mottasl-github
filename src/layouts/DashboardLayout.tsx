@@ -17,10 +17,9 @@ function DashboardContent({ children }: { children: ReactNode }) {
   const [searchValue, setSearchValue] = useState("")
   const [isActionCenterOpen, setIsActionCenterOpen] = useState(false)
 
-  const handleSearchChange = (value: string) => {
+  const handleGlobalSearch = (value: string) => {
     setSearchValue(value)
-    // You can add global search logic here
-    console.log("Global search:", value)
+    // Handle global search functionality here
   }
 
   const handleSearchFocus = () => {
@@ -48,7 +47,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
             showSearch={true}
             searchPlaceholder="Find contacts, create campaigns, or discover actions"
             searchValue={searchValue}
-            onSearchChange={handleSearchChange}
+            onSearchChange={handleGlobalSearch}
             onSearchFocus={handleSearchFocus}
             isActionCenterOpen={isActionCenterOpen}
             onActionCenterClose={handleActionCenterClose}
