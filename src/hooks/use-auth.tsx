@@ -47,19 +47,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    // Redirect logic
+    // Enhanced redirect logic with better error handling
     if (!isLoading) {
       const isAuthenticated = localStorage.getItem("isAuthenticated") === "true"
+      const userEmail = localStorage.getItem("userEmail")
       
-      if (!isAuthenticated && !isPublicRoute) {
-        // User is not authenticated and trying to access protected route
-        navigate("/login")
-      } else if (isAuthenticated && isPublicRoute) {
+      // More robust authentication check
+      const isValidAuth = isAuthenticated && userEmail && user
+      
+      if (!isValidAuth && !isPublicRoute) {
+        // User is not properly authenticated and trying to access protected route
+        console.log('Redirecting to login: not authenticated')
+        navigate("/login", { replace: true })
+      } else if (isValidAuth && isPublicRoute) {
         // User is authenticated but on public route, redirect to dashboard
-        navigate("/")
+        console.log('Redirecting to dashboard: already authenticated')
+        navigate("/", { replace: true })
       }
     }
-  }, [isLoading, isPublicRoute, navigate])
+  }, [isLoading, isPublicRoute, navigate, user])
 
   const login = (email: string, name?: string) => {
     localStorage.setItem("isAuthenticated", "true")
