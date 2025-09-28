@@ -36,24 +36,33 @@ function DashboardContent({ children }: { children: ReactNode }) {
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
           "--header-height": "calc(var(--spacing) * 12)",
+          "--header-height-mobile": "calc(var(--spacing) * 16)",
         } as React.CSSProperties
       }
     >
       <div className="flex h-screen w-full max-w-full">
         <AppSidebar variant="inset" />
         <SidebarInset className="flex flex-1 flex-col sidebar-content-transition bg-white relative min-w-0">
-          <PageHeader 
-            showBreadcrumbs={true} 
-            showSearch={true}
-            searchPlaceholder="Find contacts, create campaigns, or discover actions"
-            searchValue={searchValue}
-            onSearchChange={handleGlobalSearch}
-            onSearchFocus={handleSearchFocus}
-            isActionCenterOpen={isActionCenterOpen}
-            onActionCenterClose={handleActionCenterClose}
-            isLoading={isNavigating} 
-          />
-          <div className="flex-1 overflow-y-auto overflow-x-hidden relative min-w-0">
+          {/* Fixed Header - Transparent Background */}
+          <div className="absolute top-0 left-0 right-0 z-80 pointer-events-auto h-[var(--header-height-mobile)] md:h-[var(--header-height)] w-full">
+            <div className="bg-transparent backdrop-blur border-b border-border/20 overview-hidden rounded-xl h-full flex items-center w-full px-0">
+              <div className="w-full">
+                <PageHeader 
+                showBreadcrumbs={true} 
+                showSearch={true}
+                searchPlaceholder="Find contacts, create campaigns, or discover actions"
+                searchValue={searchValue}
+                onSearchChange={handleGlobalSearch}
+                onSearchFocus={handleSearchFocus}
+                isActionCenterOpen={isActionCenterOpen}
+                onActionCenterClose={handleActionCenterClose}
+                isLoading={isNavigating} 
+              />
+              </div>
+            </div>
+          </div>
+          {/* Scrollable Content Area */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden relative min-w-0 pt-[var(--header-height-mobile)] md:pt-[var(--header-height)]">
             <PageWrapper>
               {children}
             </PageWrapper>

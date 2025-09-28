@@ -1,18 +1,49 @@
 "use client"
 
+import { useState } from "react"
 import { useNavigationContext } from "@/hooks/use-navigation-context"
 import { motion, AnimatePresence } from "framer-motion"
 import { pageWrapperLoadingVariants, skeletonStaggerVariants, skeletonItemVariants } from "@/lib/transitions"
 import { CardSkeleton } from "@/components/ui/card"
+import { PageHeader } from "@/components/page-header"
 
 interface PageWrapperProps {
   children: React.ReactNode
   isLoading?: boolean
+  showFixedHeader?: boolean
+  headerTitle?: string
+  headerDescription?: string
+  showHeaderSearch?: boolean
+  headerSearchPlaceholder?: string
 }
 
-export function PageWrapper({ children, isLoading: propIsLoading = false }: PageWrapperProps) {
+export function PageWrapper({ 
+  children, 
+  isLoading: propIsLoading = false,
+  showFixedHeader = false,
+  headerTitle,
+  headerDescription,
+  showHeaderSearch = true,
+  headerSearchPlaceholder = "Search..."
+}: PageWrapperProps) {
   const { isLoading: contextIsLoading } = useNavigationContext()
   const isLoading = propIsLoading || contextIsLoading
+  
+  const [searchValue, setSearchValue] = useState("")
+  const [isActionCenterOpen, setIsActionCenterOpen] = useState(false)
+
+  const handleGlobalSearch = (value: string) => {
+    setSearchValue(value)
+    // Handle global search functionality here
+  }
+
+  const handleSearchFocus = () => {
+    setIsActionCenterOpen(true)
+  }
+
+  const handleActionCenterClose = () => {
+    setIsActionCenterOpen(false)
+  }
 
   return (
     <motion.div 
@@ -21,6 +52,23 @@ export function PageWrapper({ children, isLoading: propIsLoading = false }: Page
       initial="initial"
       animate={isLoading ? "loading" : "loaded"}
     >
+      {showFixedHeader && (
+        <div className="sticky top-0 z-50 bg-white border-b border-border rounded-b-xl shadow-sm">
+          <PageHeader 
+            title={headerTitle}
+            description={headerDescription}
+            showBreadcrumbs={true} 
+            showSearch={showHeaderSearch}
+            searchPlaceholder={headerSearchPlaceholder}
+            searchValue={searchValue}
+            onSearchChange={handleGlobalSearch}
+            onSearchFocus={handleSearchFocus}
+            isActionCenterOpen={isActionCenterOpen}
+            onActionCenterClose={handleActionCenterClose}
+            isLoading={isLoading} 
+          />
+        </div>
+      )}
       <div className="sidebar-content-transition flex-1 flex flex-col min-h-0 min-w-0">
         <AnimatePresence mode="wait">
           {isLoading ? (
