@@ -1,12 +1,11 @@
 {
-  "name": "mottasl",
+  "name": "Mottasl",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:vercel": "npm run build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "guidelines": "echo '📋 Development Guidelines: See DEVELOPMENT_GUIDELINES.md'"

@@ -66,31 +66,23 @@ function DashboardContent({ children }: { children: ReactNode }) {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { isAuthenticated, isLoading, user } = useAuth()
+  const { isAuthenticated, isLoading } = useAuth()
 
-  // Show loading state while checking authentication
+  // Show nothing while checking authentication
   if (isLoading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-background">
+      <div className="h-screen w-full flex items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted border-t-foreground"></div>
-          <p className="text-sm text-muted-foreground">Checking authentication...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+          <p className="text-sm text-gray-600">Loading...</p>
         </div>
       </div>
     )
   }
 
-  // Enhanced auth protection - redirect will happen in AuthProvider
-  // but we also check here for extra security
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted border-t-foreground"></div>
-          <p className="text-sm text-muted-foreground">Redirecting to login...</p>
-        </div>
-      </div>
-    )
+  // Show nothing if not authenticated (redirect will happen in AuthProvider)
+  if (!isAuthenticated) {
+    return null
   }
 
   return (
