@@ -97,7 +97,7 @@ export function PageHeader({
   
   // Search
   showSearch = false,
-  searchPlaceholder = "Search...",
+  searchPlaceholder = "Find contacts, create campaigns, or discover actions",
   searchValue = "",
   onSearchChange,
   onSearchFocus,

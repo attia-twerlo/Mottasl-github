@@ -46,7 +46,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
           <PageHeader 
             showBreadcrumbs={true} 
             showSearch={true}
-            searchPlaceholder="Search contacts, messages, campaigns..."
+            searchPlaceholder="Find contacts, create campaigns, or discover actions"
             searchValue={searchValue}
             onSearchChange={handleSearchChange}
             onSearchFocus={handleSearchFocus}
