@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/hooks/use-auth'
 import { Toaster } from '@/components/ui/sonner'
+import { ProtectedRoute, PublicRoute } from '@/components/ProtectedRoute'
 // appConfig removed as it's not used in Vite version
 
 // Layout components
@@ -31,107 +32,137 @@ function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={
-          <LoginLayout>
-            <LoginPage />
-          </LoginLayout>
+          <PublicRoute>
+            <LoginLayout>
+              <LoginPage />
+            </LoginLayout>
+          </PublicRoute>
         } />
         <Route path="/signup" element={
-          <LoginLayout>
-            <SignupPage />
-          </LoginLayout>
+          <PublicRoute>
+            <LoginLayout>
+              <SignupPage />
+            </LoginLayout>
+          </PublicRoute>
         } />
         
         {/* Protected routes */}
         <Route path="/" element={
-          <RootLayout>
-            <DashboardLayout>
-              <DashboardPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <DashboardPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/analytics" element={
-          <RootLayout>
-            <DashboardLayout>
-              <AnalyticsPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <AnalyticsPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/campaigns" element={
-          <RootLayout>
-            <DashboardLayout>
-              <CampaignsPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <CampaignsPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/campaigns/create" element={
-          <RootLayout>
-            <DashboardLayout>
-              <CampaignsCreatePage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <CampaignsCreatePage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/campaigns/settings" element={
-          <RootLayout>
-            <DashboardLayout>
-              <CampaignsSettingsPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <CampaignsSettingsPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/campaigns/templates" element={
-          <RootLayout>
-            <DashboardLayout>
-              <CampaignsTemplatesPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <CampaignsTemplatesPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/campaigns/ai-bots" element={
-          <RootLayout>
-            <DashboardLayout>
-              <CampaignsAiBotsPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <CampaignsAiBotsPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/contacts" element={
-          <RootLayout>
-            <DashboardLayout>
-              <ContactsPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <ContactsPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/contacts/create" element={
-          <RootLayout>
-            <DashboardLayout>
-              <ContactsCreatePage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <ContactsCreatePage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/contacts/:id" element={
-          <RootLayout>
-            <DashboardLayout>
-              <ContactDetailPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <ContactDetailPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/messages" element={
-          <RootLayout>
-            <DashboardLayout>
-              <MessagesPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <MessagesPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/notifications" element={
-          <RootLayout>
-            <DashboardLayout>
-              <NotificationsPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <NotificationsPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         <Route path="/settings" element={
-          <RootLayout>
-            <DashboardLayout>
-              <SettingsPage />
-            </DashboardLayout>
-          </RootLayout>
+          <ProtectedRoute>
+            <RootLayout>
+              <DashboardLayout>
+                <SettingsPage />
+              </DashboardLayout>
+            </RootLayout>
+          </ProtectedRoute>
         } />
         
         {/* Redirect unmatched routes to login */}

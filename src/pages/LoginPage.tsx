@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate, Link, useLocation } from "react-router-dom"
 import { Eye, EyeOff, Mail, Lock, ArrowLeft, Shield, MessageSquare, Phone, Smartphone, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -45,7 +45,11 @@ export default function LoginPage() {
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null)
   const [generalError, setGeneralError] = useState<string>("")
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
+  
+  // Get the intended redirect path
+  const from = location.state?.from?.pathname || "/"
 
   // Demo credentials from config
   const demoCredentials = getDemoCredentials()
@@ -231,11 +235,8 @@ export default function LoginPage() {
           duration: 3000,
         })
         
-        // Use auth context to login
-        login(email)
-        
-        // Redirect to overview page
-        navigate("/")
+        // Use auth context to login with redirect
+        login(email, undefined, from)
       } else {
         // Show error in form
         setErrors({

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate, Link, useLocation } from "react-router-dom"
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,7 +31,11 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<FieldValidation>({})
   const [touched, setTouched] = useState<{[key: string]: boolean}>({})
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
+  
+  // Get the intended redirect path
+  const from = location.state?.from?.pathname || "/"
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -120,7 +124,7 @@ export default function SignupPage() {
     })
     
     // Use auth context to login
-    login(formData.email, `${formData.firstName} ${formData.lastName}`)
+    login(formData.email, `${formData.firstName} ${formData.lastName}`, from)
     
     // Redirect to overview page
     navigate("/")
