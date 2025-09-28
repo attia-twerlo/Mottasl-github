@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { AppSidebar } from "@/components/app-sidebar"
 import { PageWrapper } from "@/components/page-wrapper"
 import { PageHeader } from "@/components/page-header"
@@ -35,20 +35,26 @@ function DashboardContent({ children }: { children: ReactNode }) {
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-          "--header-height-mobile": "calc(var(--spacing) * 16)",
+          "--header-height": "calc(var(--spacing) * 14)",
+          "--header-height-mobile": "calc(var(--spacing) * 18)",
         } as React.CSSProperties
       }
     >
       <div className="flex h-screen w-full max-w-full">
         <AppSidebar variant="inset" />
         <SidebarInset className="flex flex-1 flex-col sidebar-content-transition bg-white relative min-w-0">
-          {/* Fixed Header - Transparent Background */}
-          <div className="absolute top-0 left-0 right-0 z-80 pointer-events-auto h-[var(--header-height-mobile)] md:h-[var(--header-height)] w-full">
-            <div className="bg-transparent backdrop-blur border-b border-border/20 overview-hidden rounded-xl h-full flex items-center w-full px-0">
-              <div className="w-full">
-                <PageHeader 
-                showBreadcrumbs={true} 
+          <div
+            className="flex-1 overflow-y-auto overscroll-contain overflow-hidden relative min-w-0 scroll-smooth"
+            id="dashboard-scroll"
+            data-scroll-container
+          >
+            {/* Sticky Header inside scroll context */}
+            <div
+              className="sticky top-0 z-40 w-full backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/90 border-b border-border/30 transition-shadow rounded-t-xl overflow-hidden"
+              data-header
+            >
+              <PageHeader
+                showBreadcrumbs={true}
                 showSearch={true}
                 searchPlaceholder="Find contacts, create campaigns, or discover actions"
                 searchValue={searchValue}
@@ -56,26 +62,15 @@ function DashboardContent({ children }: { children: ReactNode }) {
                 onSearchFocus={handleSearchFocus}
                 isActionCenterOpen={isActionCenterOpen}
                 onActionCenterClose={handleActionCenterClose}
-                isLoading={isNavigating} 
+                isLoading={isNavigating}
+                className="py-4 sm:py-5"
               />
-              </div>
             </div>
-          </div>
-          {/* Scrollable Content Area */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden relative min-w-0 pt-[var(--header-height-mobile)] md:pt-[var(--header-height)]">
+            {/* Page Content */}
             <PageWrapper>
               {children}
             </PageWrapper>
-            {/* Mobile-only safe area gradient overlay */}
-            <div className="absolute bottom-0 left-0 right-0 pointer-events-none md:hidden">
-              <div 
-                className="h-20 bg-gradient-to-t from-white to-transparent"
-                style={{
-                  background: 'linear-gradient(to top, white 0%, rgba(255, 255, 255, 0.8) 50%, transparent 100%)',
-                  paddingBottom: 'env(safe-area-inset-bottom, 0px)'
-                }}
-              />
-            </div>
+            {/* Bottom space handled via PageWrapper padding (mobile only) */}
           </div>
         </SidebarInset>
       </div>
@@ -85,6 +80,48 @@ function DashboardContent({ children }: { children: ReactNode }) {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { isAuthenticated, isLoading } = useAuth()
+  // Optional runtime toggle (could be lifted to config): set to false to disable iOS guard
+  const ENABLE_IOS_GUARD = true
+
+  useEffect(() => {
+    if (!ENABLE_IOS_GUARD) return
+    const ua = navigator.userAgent || navigator.vendor
+    const isiOS = /iPad|iPhone|iPod/.test(ua) || ("platform" in navigator && /Mac/.test((navigator as any).platform) && 'ontouchend' in document)
+    if (!isiOS) return
+
+    const scroller = document.getElementById('dashboard-scroll') as HTMLDivElement | null
+    if (!scroller) return
+
+    let startY = 0
+    let startScrollTop = 0
+
+    const onTouchStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY
+      startScrollTop = scroller.scrollTop
+    }
+
+    const onTouchMove = (e: TouchEvent) => {
+      const currentY = e.touches[0].clientY
+      const diff = currentY - startY
+      const scrollingDown = diff < 0 // finger moving up
+      const scrollingUp = diff > 0
+      const atTop = scroller.scrollTop <= 0
+      const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1
+
+      // Prevent bounce when user tries to pull past top or push past bottom
+      if ((atTop && scrollingUp) || (atBottom && scrollingDown)) {
+        e.preventDefault()
+      }
+    }
+
+    scroller.addEventListener('touchstart', onTouchStart, { passive: true })
+    scroller.addEventListener('touchmove', onTouchMove, { passive: false })
+
+    return () => {
+      scroller.removeEventListener('touchstart', onTouchStart)
+      scroller.removeEventListener('touchmove', onTouchMove)
+    }
+  }, [])
 
   // Show nothing while checking authentication
   if (isLoading) {
@@ -106,9 +143,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <NotificationProvider>
       <NavigationProvider>
-        <DashboardContent>
-          {children}
-        </DashboardContent>
+        <div className="relative h-full w-full overflow-hidden">
+          <DashboardContent>
+            {children}
+          </DashboardContent>
+        </div>
       </NavigationProvider>
     </NotificationProvider>
   )

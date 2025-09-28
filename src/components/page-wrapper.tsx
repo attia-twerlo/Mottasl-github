@@ -74,7 +74,7 @@ export function PageWrapper({
           {isLoading ? (
             <motion.div 
               key="loading"
-              className="space-y-4 p-3 sm:p-4 md:p-6 max-w-full"
+              className="space-y-4 p-3 sm:p-4 md:p-6 max-w-full pb-[calc(var(--header-height-mobile)+4rem)] md:pb-6"
               variants={skeletonStaggerVariants}
               initial="initial"
               animate="animate"
@@ -106,7 +106,7 @@ export function PageWrapper({
           ) : (
             <motion.div
               key="content"
-              className="flex-1 flex flex-col max-w-full min-w-0"
+              className="flex-1 flex flex-col max-w-full min-w-0 pb-[calc(var(--header-height-mobile)+4rem)] md:pb-6"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
