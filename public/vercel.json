@@ -1,44 +1,13 @@
 {
   "rewrites": [
-    {
-      "source": "/campaigns",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/campaigns/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/contacts",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/contacts/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/analytics",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/messages",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/notifications", 
-      "destination": "/index.html"
-    },
-    {
-      "source": "/settings",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/((?!api|_next|static|favicon\\.ico|.*\\.).*)",
-      "destination": "/index.html"
-    }
-  ],
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
-  "framework": null
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/favicon.ico", "destination": "/favicon.ico" },
+    { "source": "/Logo.svg", "destination": "/Logo.svg" },
+    { "source": "/file.svg", "destination": "/file.svg" },
+    { "source": "/globe.svg", "destination": "/globe.svg" },
+    { "source": "/window.svg", "destination": "/window.svg" },
+    { "source": "/icons/(.*)", "destination": "/icons/$1" },
+    { "source": "/logos/(.*)", "destination": "/logos/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
