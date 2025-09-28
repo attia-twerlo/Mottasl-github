@@ -1,0 +1,46 @@
+{
+  "routes": [
+    {
+      "src": "/campaigns/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/contacts/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/analytics",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/messages",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/notifications",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/settings",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/login",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/signup",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/((?!api|_next|.*\\.).*)$",
+      "dest": "/index.html"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!api|_next|.*\\.).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
