@@ -399,3 +399,24 @@ html, body {
     max-width: none;
   }
 }
+
+/* Mobile Safe Area Support - iPhone home indicator and other mobile UI */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-safe-area {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+}
+
+/* Fallback for devices without safe area support */
+@media (max-width: 768px) {
+  .mobile-safe-area {
+    padding-bottom: 1.5rem; /* 24px fallback for mobile devices */
+  }
+}
+
+/* Additional bottom spacing for very small screens */
+@media (max-width: 480px) {
+  .mobile-safe-area {
+    padding-bottom: max(env(safe-area-inset-bottom, 1.5rem), 1.5rem);
+  }
+}

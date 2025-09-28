@@ -68,8 +68,8 @@ export default function ContactDetailPage() {
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <PageHeaderProfile
-            title="Loading..."
-            description="Loading contact information"
+            title="Contact Not Found"
+            description="The requested contact could not be found"
             avatar={{
               src: "",
               fallback: "??",

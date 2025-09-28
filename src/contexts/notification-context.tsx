@@ -8,6 +8,8 @@ export interface Notification {
   title: string
   description: string
   type: 'success' | 'error' | 'info' | 'warning'
+  category?: 'system' | 'campaign' | 'contact' | 'message' | 'billing'
+  priority?: 'low' | 'medium' | 'high' | 'urgent'
   timestamp: Date
   read: boolean
 }
@@ -49,6 +51,8 @@ export function NotificationProvider({
       title: "New Campaign Created",
       description: "Your campaign 'Summer Sale' has been successfully created",
       type: "success",
+      category: "campaign",
+      priority: "medium",
       timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
       read: false
     },
@@ -57,6 +61,8 @@ export function NotificationProvider({
       title: "Message Delivery Failed",
       description: "Failed to deliver message to 5 recipients",
       type: "error",
+      category: "message",
+      priority: "high",
       timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
       read: false
     },
@@ -65,6 +71,8 @@ export function NotificationProvider({
       title: "New Contact Added",
       description: "John Doe has been added to your contact list",
       type: "info",
+      category: "contact",
+      priority: "low",
       timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
       read: true
     },
@@ -73,6 +81,8 @@ export function NotificationProvider({
       title: "Campaign Completed",
       description: "Your campaign 'Welcome Series' has finished sending",
       type: "success",
+      category: "campaign",
+      priority: "low",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
       read: true
     },
@@ -81,6 +91,8 @@ export function NotificationProvider({
       title: "Low Balance Alert",
       description: "Your account balance is running low",
       type: "warning",
+      category: "billing",
+      priority: "urgent",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
       read: false
     },
@@ -89,8 +101,50 @@ export function NotificationProvider({
       title: "Template Updated",
       description: "Your email template 'Welcome' has been updated",
       type: "info",
+      category: "campaign",
+      priority: "low",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
       read: true
+    },
+    {
+      id: "7",
+      title: "System Maintenance Scheduled",
+      description: "Scheduled maintenance will occur tonight from 2:00 AM to 4:00 AM",
+      type: "warning",
+      category: "system",
+      priority: "medium",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
+      read: false
+    },
+    {
+      id: "8",
+      title: "New Message Received",
+      description: "You have a new message from Ahmed Ali",
+      type: "info",
+      category: "message",
+      priority: "medium",
+      timestamp: new Date(Date.now() - 1000 * 60 * 10), // 10 minutes ago
+      read: false
+    },
+    {
+      id: "9",
+      title: "Payment Received",
+      description: "Payment of $299.00 has been successfully processed",
+      type: "success",
+      category: "billing",
+      priority: "low",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 hours ago
+      read: true
+    },
+    {
+      id: "10",
+      title: "Contact Opted Out",
+      description: "Sarah Johnson has opted out of marketing communications",
+      type: "warning",
+      category: "contact",
+      priority: "medium",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 hours ago
+      read: false
     }
   ])
   
