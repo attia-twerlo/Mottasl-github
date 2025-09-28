@@ -39,9 +39,9 @@ function DashboardContent({ children }: { children: ReactNode }) {
         } as React.CSSProperties
       }
     >
-      <div className="flex h-screen w-full">
+      <div className="flex h-screen w-full m-0 p-0">
         <AppSidebar variant="inset" />
-        <SidebarInset className="flex flex-1 flex-col bg-white">
+        <SidebarInset className="flex flex-1 flex-col bg-white m-0">
           {/* Sticky Header */}
           <div className="sticky top-0 z-1 w-full bg-white/95 backdrop-blur-sm border-b border-border/40 rounded-t-xl overflow-hidden">
             <PageHeader
@@ -92,7 +92,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <NotificationProvider>
       <NavigationProvider>
-        <div className="h-full w-full">
+        <div className="h-full w-full m-0 p-0">
           <DashboardContent>
             {children}
           </DashboardContent>

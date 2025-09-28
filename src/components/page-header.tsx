@@ -232,7 +232,7 @@ export function PageHeader({
   if (isLoading) {
     return (
       <motion.div 
-        className={`flex flex-col gap-4 px-4 py-4 md:flex-row md:items-end md:justify-between ${className}`}
+        className={`flex flex-col gap-3 px-3 py-2 md:flex-row md:items-end md:justify-between ${className}`}
         variants={skeletonStaggerVariants}
         initial="initial"
         animate="animate"
@@ -276,7 +276,7 @@ export function PageHeader({
           initial="initial"
           animate="animate"
         >
-          <div className="flex w-full items-center px-8 py-4 lg:px-10 lg:py-6 min-w-0">
+          <div className="flex w-full items-center px-4 lg:px-6 py-3 min-w-0">
             {/* Left side - Sidebar trigger and breadcrumbs skeleton */}
             <motion.div 
               className="flex items-center gap-2 sm:gap-3 flex-shrink-0"
@@ -295,7 +295,7 @@ export function PageHeader({
             {/* Center - Search Bar skeleton (Hidden on mobile, absolute positioning for perfect centering on desktop) */}
             {!isMobile && (
               <motion.div 
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-6 pointer-events-none"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-3 pointer-events-none"
                 variants={skeletonItemVariants}
               >
                 <div className="relative w-full pointer-events-auto">
@@ -325,7 +325,7 @@ export function PageHeader({
     return (
       <>
         <header className="flex h-(--header-height) shrink-0 items-center border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) relative max-w-full overflow-x-hidden rounded-t-xl overflow-hidden">
-          <div className="flex w-full items-center px-4 py-4 min-w-0">
+          <div className="flex w-full items-center px-4 lg:px-6 py-4 min-w-0">
             {/* Left side - Sidebar trigger and breadcrumbs */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <Tooltip>
@@ -373,7 +373,7 @@ export function PageHeader({
 
             {/* Center - Search Bar (Hidden on mobile, absolute positioning for perfect centering on desktop) */}
             {!isMobile && (
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-4 pointer-events-none">
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-4 lg:px-6 pointer-events-none">
                 {showSearch ? (
                   <div className="relative w-full pointer-events-auto">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -436,7 +436,7 @@ export function PageHeader({
   
   // Main content header
   return (
-    <div className={`flex flex-col gap-4 px-4 py-6 md:flex-row md:items-end md:justify-between max-w-full ${className}`}>
+    <div className={`flex flex-col gap-4 px-4 lg:px-6 py-6 md:flex-row md:items-end md:justify-between max-w-full ${className}`}>
       {/* Left side - Title and Description */}
       <div className="space-y-1">
         {title && <h1 className="text-xl font-semibold">{title}</h1>}
@@ -567,7 +567,7 @@ export function PageHeaderProfile({
   if (isLoading) {
     return (
       <motion.div 
-        className={`flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between md:px-6 md:py-6 ${className}`}
+        className={`flex flex-col gap-4 px-6 py-6 md:flex-row md:items-center md:justify-between ${className}`}
         variants={skeletonStaggerVariants}
         initial="initial"
         animate="animate"
@@ -605,7 +605,7 @@ export function PageHeaderProfile({
   }
 
   return (
-    <div className={`flex flex-col gap-4 px-4 py-4 md:flex-row md:items-end md:justify-between md:px-6 md:py-6 ${className}`}>
+    <div className={`flex flex-col gap-4 px-6 py-6 md:flex-row md:items-end md:justify-between ${className}`}>
       {/* Left side - Back button, Avatar, Title and Description */}
       <div className="flex items-center gap-4">
         <Button

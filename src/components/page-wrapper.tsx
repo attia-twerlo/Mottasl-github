@@ -22,14 +22,14 @@ export function PageWrapper({
         {isLoading ? (
           <motion.div 
             key="loading"
-            className="space-y-6"
+            className="space-y-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
             {/* Loading skeleton */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div className="h-8 w-64 bg-gray-200 animate-pulse rounded-md" />
               <div className="h-4 w-96 bg-gray-200 animate-pulse rounded-md" />
               <div className="space-y-2">
@@ -40,7 +40,7 @@ export function PageWrapper({
             </div>
             
             {/* Card skeletons */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="h-32 bg-gray-200 animate-pulse rounded-lg" />
               ))}
