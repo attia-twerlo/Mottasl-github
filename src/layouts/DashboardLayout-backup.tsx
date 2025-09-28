@@ -36,6 +36,10 @@ function DashboardContent({ children }: { children: ReactNode }) {
           "--sidebar-width": "calc(var(--spacing) * 72)",
           "--header-height": "calc(var(--spacing) * 14)",
           "--header-height-mobile": "calc(var(--spacing) * 18)",
+          "--dashboard-padding": "1rem",
+          "--dashboard-padding-sm": "1.25rem",
+          "--dashboard-padding-md": "1.5rem",
+          "--dashboard-padding-lg": "2rem",
         } as React.CSSProperties
       }
     >
@@ -43,7 +47,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
         <AppSidebar variant="inset" />
         <SidebarInset className="flex flex-1 flex-col bg-white">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-1 w-full bg-white/95 backdrop-blur-sm border-b border-border/40">
+          <div className="sticky top-0 z-1 w-full bg-white/95 backdrop-blur-sm border-b border-border/40 rounded-t-xl overflow-hidden">
             <PageHeader
               showBreadcrumbs={true}
               showSearch={true}
@@ -54,6 +58,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
               isActionCenterOpen={isActionCenterOpen}
               onActionCenterClose={handleActionCenterClose}
               isLoading={isNavigating}
+              className="px-[var(--dashboard-padding)] sm:px-[var(--dashboard-padding-sm)] md:px-[var(--dashboard-padding-md)] py-4 sm:py-5"
             />
           </div>
           
@@ -76,7 +81,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   if (isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center gap-4">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
           <p className="text-sm text-gray-600">Loading...</p>
         </div>
@@ -92,7 +97,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <NotificationProvider>
       <NavigationProvider>
-        <div className="h-full w-full">
+        <div className="relative h-full w-full overflow-hidden">
           <DashboardContent>
             {children}
           </DashboardContent>
