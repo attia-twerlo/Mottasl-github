@@ -15,5 +15,13 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    // Better chunking for SPA
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        }
+      }
+    }
   },
 })
